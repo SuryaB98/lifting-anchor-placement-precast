@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BuildTwin — Technical Assessment — Lifting-Anchor Placement Agent</title>
+<style>
+  :root{
+    --ink:#1f2933; --ink2:#3e4c59; --mut:#7b8794; --line:#d2d6dc;
+    --accent:#1b4965; --accent2:#2c6fbb; --red:#c0392b; --amber:#9c6a13; --green:#2f6b3f;
+    --bg-soft:#f6f8fa; --bg-blue:#eef4fa; --bg-amber:#fbf4e6; --bg-red:#fbeded; --bg-green:#edf5ef;
+  }
+  @page{ size:A4; margin:16mm 15mm 16mm 15mm; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family:-apple-system,"Helvetica Neue",Arial,sans-serif;
+    color:var(--ink); font-size:10.4px; line-height:1.5; -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  h1,h2,h3,h4{ color:var(--accent); font-weight:700; line-height:1.2; margin:0 0 .35em; }
+  h1{ font-size:21px; }
+  h2{ font-size:14.5px; margin-top:1.4em; padding-bottom:3px; border-bottom:2px solid var(--accent); }
+  h3{ font-size:11.6px; color:var(--ink); margin-top:1.1em; }
+  h4{ font-size:10.6px; color:var(--ink2); margin-top:.9em; }
+  p{ margin:.45em 0; }
+  ul,ol{ margin:.4em 0 .6em; padding-left:1.25em; }
+  li{ margin:.22em 0; }
+  code,.mono{ font-family:"SF Mono",Menlo,Consolas,monospace; font-size:9.2px; }
+  a{ color:var(--accent2); text-decoration:none; }
+  strong{ font-weight:700; }
+  .sec{ page-break-inside:avoid; }
+  table{ border-collapse:collapse; width:100%; margin:.5em 0 .7em; font-size:9.5px; }
+  th,td{ border:1px solid var(--line); padding:4px 6px; text-align:left; vertical-align:top; }
+  th{ background:var(--bg-soft); color:var(--ink2); font-weight:700; }
+  td.r,th.r{ text-align:right; }
+  td.c,th.c{ text-align:center; }
+  .fail{ color:var(--red); font-weight:700; }
+  .ok{ color:var(--green); font-weight:700; }
+  figure{ margin:.7em 0; text-align:center; page-break-inside:avoid; }
+  figure svg{ width:100%; height:auto; }
+  .fig-narrow{ max-width:62%; margin-left:auto; margin-right:auto; }
+  .callout{ border:1px solid var(--line); border-left:4px solid var(--accent2); background:var(--bg-blue);
+    padding:7px 11px; margin:.7em 0; border-radius:3px; page-break-inside:avoid; }
+  .callout.amber{ border-left-color:var(--amber); background:var(--bg-amber); }
+  .callout.red{ border-left-color:var(--red); background:var(--bg-red); }
+  .callout.green{ border-left-color:var(--green); background:var(--bg-green); }
+  .callout .lbl{ display:block; font-weight:700; font-size:9px; letter-spacing:.04em; text-transform:uppercase; margin-bottom:2px; color:var(--ink2); }
+  pre{ background:#0f1b27; color:#dce6ef; padding:9px 11px; border-radius:4px;
+    white-space:pre-wrap; word-break:break-word;
+    font-family:"SF Mono",Menlo,Consolas,monospace; font-size:8.6px; line-height:1.45; page-break-inside:avoid; }
+  pre .k{ color:#8fd0ff; } pre .s{ color:#b6e3a7; } pre .c{ color:#7b8794; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:0 18px; }
+  .cover{ border:1px solid var(--line); border-top:5px solid var(--accent); border-radius:5px; padding:16px 18px; margin-bottom:8px; }
+  .brand{ font-size:10px; letter-spacing:.18em; color:var(--accent2); font-weight:700; text-transform:uppercase; }
+  .kicker{ font-size:9.5px; letter-spacing:.06em; color:var(--mut); text-transform:uppercase; margin-top:3px; }
+  .meta{ font-size:9px; color:var(--mut); }
+  .pill{ display:inline-block; background:var(--bg-soft); border:1px solid var(--line); border-radius:10px; padding:1px 8px; font-size:8.6px; color:var(--ink2); margin:1px 2px 1px 0; }
+  .tag{ font-size:8.4px; font-weight:700; padding:1px 5px; border-radius:3px; }
+  .tag.must{ background:var(--bg-red); color:var(--red); }
+  .tag.should{ background:var(--bg-amber); color:var(--amber); }
+  .tag.nice{ background:var(--bg-green); color:var(--green); }
+  .small{ font-size:9px; color:var(--mut); }
+  .rule{ counter-reset:none; }
+  .step{ margin:.3em 0; }
+  .step b{ color:var(--accent); }
+  hr{ border:none; border-top:1px solid var(--line); margin:1em 0; }
+  .footer-note{ font-size:8.4px; color:var(--mut); text-align:center; margin-top:6px; }
+</style>
+</head>
+<body>
+
+<div class="cover sec">
+  <div class="brand">BuildTwin · AI Factory</div>
+  <div class="kicker">Technical assessment — take-home challenge</div>
+  <h1 style="margin-top:6px;">An AI agent that places lifting anchors on a precast element</h1>
+  <p style="margin:.3em 0; font-size:11px; color:var(--ink2);">
+    Build a proof-of-concept agent that ingests a precast wall, applies a fixed set of engineering rules,
+    and <strong>generates and places the lifting anchors</strong> — with a per-anchor check report it can defend to a checking engineer.
+  </p>
+  <div style="margin-top:8px;">
+    <span class="pill">Role: Software / AI Engineer</span>
+    <span class="pill">Suggested effort: ~1 focused day</span>
+    <span class="pill">Stack: your choice</span>
+    <span class="pill">Element: WC001</span>
+    <span class="pill">v1.0</span>
+  </div>
+  <p class="meta" style="margin-top:8px;">
+    You do <strong>not</strong> need to be a structural engineer. Every rule, factor and capacity number you need is in this brief
+    (§3 and the appendices). We are assessing how you turn a safety-critical rule-set into a reliable, explainable agent — and your
+    judgement about where an LLM belongs and where it must not.
+  </p>
+</div>
+
+<div class="callout red sec">
+  <span class="lbl">Read first — safety framing</span>
+  This is a POC on the <strong>provided synthetic data only</strong>. Lifting design is genuinely safety-critical — a wrongly placed or
+  undersized anchor can drop a multi-tonne panel onto people. Nothing you build here is for real fabrication. The whole point of the
+  exercise is to see whether you treat a life-safety rule-set with the discipline it deserves: deterministic maths, explicit checks,
+  and <strong>failing closed</strong> when an input is missing rather than guessing.
+</div>
+
+<!-- ============================================================ -->
+<h2>1 · Context — what we're building and why it matters</h2>
+<div class="sec">
+<p>
+  BuildTwin builds an AI cockpit for precast concrete. Every precast element is cast in a mould, stripped, turned from flat to vertical,
+  transported and finally erected on site. To be handled at all, the element has steel <strong>lifting anchors</strong> cast into it.
+  Where those anchors go — how many, in what position, of what capacity — is decided by deterministic engineering rules and the anchor
+  manufacturer's approval tables. It is unforgiving: the wrong position makes the panel hang out of plumb and overload one anchor; the
+  wrong capacity or concrete strength pulls the anchor out of the concrete.
+</p>
+<p>
+  Today our prototype does this with a <em>naive heuristic</em>: it puts two anchors at 20% of the length from each end and stops. It has
+  no centre of gravity, no load cases, no capacity check, no awareness of openings, and no notion of when to refuse. We want to find out
+  whether an <strong>AI agent that orchestrates the real rules</strong> can place the anchors properly, show its working, and know when it
+  must hand back to a human. That is your task, on one real element: <strong>WC001</strong>.
+</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>2 · The element — WC001</h2>
+<figure><svg viewBox="0 0 920 630" xmlns="http://www.w3.org/2000/svg" font-family="Arial"><rect x="0" y="0" width="920" height="630" fill="white"/><line x1="380.0" y1="40" x2="380.0" y2="70" stroke="#1f2933" stroke-width="2"/><path d="M 374.0 70 a6 8 0 1 0 12 0" fill="none" stroke="#1f2933" stroke-width="2"/><text x="392.0" y="52" font-size="11" fill="#52606d">crane hook</text><rect x="213.69552621700473" y="113" width="332.60894756599055" height="14" rx="3" fill="#2c6fbb"/><line x1="380.0" y1="70" x2="380.0" y2="113" stroke="#1f2933" stroke-width="2"/><text x="380.0" y="121" font-size="10.5" fill="white" text-anchor="middle" dominant-baseline="middle">spreader beam — slings vertical (β = 0)</text><line x1="227.69552621700473" y1="127" x2="227.69552621700473" y2="215" stroke="#2c6fbb" stroke-width="1.6"/><line x1="532.3044737829953" y1="127" x2="532.3044737829953" y2="215" stroke="#2c6fbb" stroke-width="1.6"/><rect x="120" y="215" width="520" height="331.9" fill="#f5f7fa" stroke="#1f2933" stroke-width="1.8"/><rect x="247.2" y="314.6" width="121.7" height="232.3" fill="#e4e7eb" stroke="#52606d" stroke-width="1" stroke-dasharray="4 3"/><text x="308.1" y="430.7" font-size="10" fill="#52606d" text-anchor="middle" dominant-baseline="middle">opening 1</text><rect x="457.4" y="331.2" width="132.8" height="110.6" fill="#e4e7eb" stroke="#52606d" stroke-width="1" stroke-dasharray="4 3"/><text x="523.8" y="386.5" font-size="10" fill="#52606d" text-anchor="middle" dominant-baseline="middle">opening 2</text><line x1="177.8" y1="221" x2="177.8" y2="540.9148936170213" stroke="#cbd2d9" stroke-width="0.6"/><line x1="235.6" y1="221" x2="235.6" y2="540.9148936170213" stroke="#cbd2d9" stroke-width="0.6"/><line x1="293.3" y1="221" x2="293.3" y2="540.9148936170213" stroke="#cbd2d9" stroke-width="0.6"/><line x1="351.1" y1="221" x2="351.1" y2="540.9148936170213" stroke="#cbd2d9" stroke-width="0.6"/><line x1="408.9" y1="221" x2="408.9" y2="540.9148936170213" stroke="#cbd2d9" stroke-width="0.6"/><line x1="466.7" y1="221" x2="466.7" y2="540.9148936170213" stroke="#cbd2d9" stroke-width="0.6"/><line x1="524.4" y1="221" x2="524.4" y2="540.9148936170213" stroke="#cbd2d9" stroke-width="0.6"/><line x1="582.2" y1="221" x2="582.2" y2="540.9148936170213" stroke="#cbd2d9" stroke-width="0.6"/><circle cx="227.69552621700473" cy="215" r="6" fill="#c0392b"/><line x1="227.69552621700473" y1="215" x2="227.69552621700473" y2="249" stroke="#c0392b" stroke-width="2"/><path d="M 220.69552621700473 249 q7 10 14 0" fill="none" stroke="#c0392b" stroke-width="2"/><circle cx="532.3044737829953" cy="215" r="6" fill="#c0392b"/><line x1="532.3044737829953" y1="215" x2="532.3044737829953" y2="249" stroke="#c0392b" stroke-width="2"/><path d="M 525.3044737829953 249 q7 10 14 0" fill="none" stroke="#c0392b" stroke-width="2"/><text x="227.69552621700473" y="203" font-size="11" fill="#c0392b" text-anchor="middle" font-weight="bold">anchor 1</text><text x="532.3044737829953" y="203" font-size="11" fill="#c0392b" text-anchor="middle" font-weight="bold">anchor 2</text><circle cx="380.0" cy="380.95744680851067" r="9" fill="white" stroke="#1f2933" stroke-width="1.4"/><path d="M 371.0 380.95744680851067 A 9 9 0 0 1 380.0 371.95744680851067 L 380.0 380.95744680851067 Z" fill="#1f2933"/><path d="M 389.0 380.95744680851067 A 9 9 0 0 1 380.0 389.95744680851067 L 380.0 380.95744680851067 Z" fill="#1f2933"/><line x1="380.0" y1="215" x2="380.0" y2="550.9148936170213" stroke="#1f2933" stroke-width="0.8" stroke-dasharray="3 3"/><text x="394.0" y="376.95744680851067" font-size="11" fill="#1f2933">CoG (indicative)</text><line x1="120" y1="185" x2="227.69552621700473" y2="185" stroke="#9aa5b1" stroke-width="1"/><line x1="120" y1="181" x2="120" y2="189" stroke="#9aa5b1" stroke-width="1"/><line x1="227.69552621700473" y1="181" x2="227.69552621700473" y2="189" stroke="#9aa5b1" stroke-width="1"/><rect x="151.84776310850236" y="176" width="44" height="14" fill="white" opacity="0.9"/><text x="173.84776310850236" y="186" font-size="11" fill="#52606d" text-anchor="middle" dominant-baseline="middle" font-family="Arial">a = 973</text><line x1="532.3044737829953" y1="185" x2="640" y2="185" stroke="#9aa5b1" stroke-width="1"/><line x1="532.3044737829953" y1="181" x2="532.3044737829953" y2="189" stroke="#9aa5b1" stroke-width="1"/><line x1="640" y1="181" x2="640" y2="189" stroke="#9aa5b1" stroke-width="1"/><rect x="564.1522368914976" y="176" width="44" height="14" fill="white" opacity="0.9"/><text x="586.1522368914976" y="186" font-size="11" fill="#52606d" text-anchor="middle" dominant-baseline="middle" font-family="Arial">a = 973</text><line x1="227.69552621700473" y1="185" x2="532.3044737829953" y2="185" stroke="#c0392b" stroke-width="1"/><line x1="227.69552621700473" y1="181" x2="227.69552621700473" y2="189" stroke="#c0392b" stroke-width="1"/><line x1="532.3044737829953" y1="181" x2="532.3044737829953" y2="189" stroke="#c0392b" stroke-width="1"/><rect x="358.0" y="176" width="44" height="14" fill="white" opacity="0.9"/><text x="380.0" y="186" font-size="11" fill="#c0392b" text-anchor="middle" dominant-baseline="middle" font-family="Arial">2754</text><text x="380.0" y="171" font-size="10" fill="#52606d" text-anchor="middle">a = 0.207·L (balance point)</text><line x1="120" y1="572.9148936170213" x2="640" y2="572.9148936170213" stroke="#9aa5b1" stroke-width="1"/><line x1="120" y1="568.9148936170213" x2="120" y2="576.9148936170213" stroke="#9aa5b1" stroke-width="1"/><line x1="640" y1="568.9148936170213" x2="640" y2="576.9148936170213" stroke="#9aa5b1" stroke-width="1"/><rect x="358.0" y="563.9148936170213" width="44" height="14" fill="white" opacity="0.9"/><text x="380.0" y="573.9148936170213" font-size="11" fill="#52606d" text-anchor="middle" dominant-baseline="middle" font-family="Arial">L = 4700</text><line x1="658" y1="215" x2="658" y2="546.9148936170213" stroke="#9aa5b1" stroke-width="1"/><line x1="654" y1="215" x2="662" y2="215" stroke="#9aa5b1" stroke-width="1"/><line x1="654" y1="546.9148936170213" x2="662" y2="546.9148936170213" stroke="#9aa5b1" stroke-width="1"/><text x="662" y="380.95744680851067" font-size="11" fill="#52606d" text-anchor="middle" dominant-baseline="middle" font-family="Arial" transform="rotate(-90 662 380.95744680851067)">H = 3000</text><text x="120" y="592.9148936170213" font-size="10.5" fill="#52606d">t = 180 mm (solid)   ·   all dimensions mm</text><rect x="680" y="235" width="210" height="250" rx="6" fill="#fbfcfd" stroke="#9aa5b1" stroke-width="1"/><text x="692" y="255" font-size="11.5" fill="#1f2933" font-weight="bold">WC001 — lifting data</text><text x="692" y="275" font-size="10" fill="#52606d">self-weight G</text><text x="878" y="275" font-size="10" fill="#1f2933" text-anchor="end">72.6 kN (7.4 t)</text><text x="692" y="298" font-size="10" fill="#52606d">concrete</text><text x="878" y="298" font-size="10" fill="#1f2933" text-anchor="end">C32/40</text><text x="692" y="321" font-size="10" fill="#52606d">first-lift fci</text><text x="878" y="321" font-size="10" fill="#1f2933" text-anchor="end">≥ 15 MPa (measured)</text><text x="692" y="344" font-size="10" fill="#52606d">governing case</text><text x="878" y="344" font-size="10" fill="#1f2933" text-anchor="end">transport ψ = 2.0</text><text x="692" y="367" font-size="10" fill="#52606d">force / anchor</text><text x="878" y="367" font-size="10" fill="#c0392b" text-anchor="end">72.6 kN</text><text x="692" y="390" font-size="10" fill="#52606d">anchors</text><text x="878" y="390" font-size="10" fill="#1f2933" text-anchor="end">n = 2 (determinate)</text><text x="692" y="413" font-size="10" fill="#52606d">candidate anchor</text><text x="878" y="413" font-size="10" fill="#1f2933" text-anchor="end">ARL-42, 80 kN</text><text x="692" y="436" font-size="10" fill="#52606d">utilisation</text><text x="878" y="436" font-size="10" fill="#c0392b" text-anchor="end">0.91 (β = 0 only)</text><text x="692" y="459" font-size="10" fill="#52606d">rig</text><text x="878" y="459" font-size="10" fill="#1f2933" text-anchor="end">spreader mandatory</text><text x="120" y="618" font-size="10" fill="#b7791f">Figure 1 — WC001 lifting arrangement (indicative). Opening positions and final length are subject to an open RFI.</text></svg><figcaption></figcaption></figure>
+<div class="sec grid2">
+  <div>
+    <table>
+      <tr><th>Property</th><th>Value</th></tr>
+      <tr><td>Type</td><td>Solid precast RC internal wall</td></tr>
+      <tr><td>Length × height × thickness</td><td>4700 × 3000 × 180 mm (approval)</td></tr>
+      <tr><td>Self-weight G</td><td class="r">72.6 kN (≈ 7.4 t)</td></tr>
+      <tr><td>Concrete class</td><td>C32/40</td></tr>
+      <tr><td>First-lift (stripping) strength</td><td>≥ 15 MPa (specified)</td></tr>
+      <tr><td>Cast orientation</td><td>Flat, on a tilting table / battery</td></tr>
+      <tr><td>Turn method</td><td class="fail">UNCONFIRMED</td></tr>
+      <tr><td>Openings (approval)</td><td>2 (door + window)</td></tr>
+    </table>
+  </div>
+  <div>
+    <div class="callout amber" style="margin-top:0;">
+      <span class="lbl">Your inputs disagree — on purpose</span>
+      WC001 reaches you from two systems that do not match. The <strong>approval design</strong> says 4700 mm long with two openings;
+      the <strong>IFC export</strong> says 4300 mm long with none. The geometry drives the centre of gravity, which drives the anchor
+      positions. Part of what we are watching is what your agent <em>does</em> with a conflict like this. (Full data: Appendix A.)
+    </div>
+    <p class="small" style="margin-top:6px;">
+      The figure shows the symmetric <em>trial</em> arrangement only. With real openings the centre of gravity moves off-centre and the
+      anchors must move with it — that is the agent's job, not a constant.
+    </p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<h2>3 · The rules — your engineering specification</h2>
+<p>
+  This is the rule-set your agent implements. It is deterministic: given frozen inputs there is exactly one correct answer. You do not
+  need to derive any of it — the factors and capacities are tabulated below.
+</p>
+
+<h3>3.1 · How the force on each anchor is computed</h3>
+<div class="sec">
+<p>Two anchors carry the panel (<code>n = 2</code>), and they are statically determinate, so each carries half of the factored load — but you must check the <strong>worst</strong> share, not assume a perfect 50/50 if the centre of gravity is off-centre. For each handling state:</p>
+<pre><span class="c"># transport / handling / erection</span>
+F_per_anchor = G * &psi;_dyn * z / n
+<span class="c"># demould adds formwork adhesion over the cast face A_f = L &times; H</span>
+F_per_anchor = ( G * &psi;_demould + q_adh * A_f * &xi;_adh ) * z / n
+</pre>
+<p class="small"><code>G</code> self-weight · <code>&psi;_dyn</code> dynamic factor (§3.2) · <code>z</code> sling-angle factor (§3.4) · <code>q_adh</code> adhesion 1.0 kN/m² · <code>&xi;_adh</code> = 1 for a flat solid panel · <code>n</code> = 2.</p>
+</div>
+
+<h3>3.2 · Load cases — each is checked at its OWN concrete strength</h3>
+<table class="sec">
+  <tr><th>Handling state</th><th class="c">&psi;_dyn</th><th class="c">strength column</th><th>extra load</th><th>notes</th></tr>
+  <tr><td>Demould / striking</td><td class="c">1.3</td><td class="c">@15 MPa (first-lift)</td><td>+ adhesion q_adh·A_f</td><td>early age — concrete is weakest here</td></tr>
+  <tr><td>Turn (tilting table)</td><td class="c">1.1</td><td class="c">@15 MPa</td><td>—</td><td>gentle if on a table</td></tr>
+  <tr><td>Turn (free crane turn)</td><td class="c">1.4</td><td class="c">@15 MPa</td><td>—</td><td>also bends the panel weak-axis</td></tr>
+  <tr><td>Storage (A-frame)</td><td class="c">—</td><td class="c">—</td><td>—</td><td>anchors ≈ unloaded; bound only</td></tr>
+  <tr><td><strong>Road transport</strong></td><td class="c"><strong>2.0</strong></td><td class="c">@full (≥ 35 MPa)</td><td>—</td><td><strong>usually governs the anchor</strong></td></tr>
+  <tr><td>Erection (crane)</td><td class="c">1.4</td><td class="c">@full</td><td>—</td><td>—</td></tr>
+</table>
+<div class="callout sec">
+  <span class="lbl">The single most common mistake</span>
+  Transport has the biggest dynamic factor but happens at <em>full</em> strength; demould has a smaller factor but happens at <em>15 MPa</em>,
+  when the anchor's capacity is much lower. <strong>You must match each case to the right strength column.</strong> The governing case is whichever
+  gives the highest demand-÷-capacity ratio — and it is not always the heaviest load.
+</div>
+
+<h3>3.3 · Anchor catalogue (POC data — not a real datasheet)</h3>
+<p class="small">Capacity is the admissible load already including the manufacturer's safety factor — use it as-is (<code>F ≤ N_zul</code>), never re-divide. The tabulated capacity is only valid if the anchor's supplementary reinforcement is placed (Figure 2). Capacity rises with concrete strength.</p>
+<table class="sec">
+  <tr>
+    <th>Anchor</th>
+    <th class="c">N_zul axial (kN)<br>@15 / @25 / @35 MPa</th>
+    <th class="c">V_zul<br>transv.</th>
+    <th class="c">min edge<br>(mm)</th>
+    <th class="c">min axis<br>(mm)</th>
+    <th class="c">min wall (mm)<br>axial / transv.</th>
+    <th class="c">clutch</th>
+  </tr>
+  <tr><td>ARL-30</td><td class="c">35 / 45 / 50</td><td class="c">25</td><td class="c">350</td><td class="c">700</td><td class="c">140 / 200</td><td class="c">RU-30</td></tr>
+  <tr><td><strong>ARL-42</strong></td><td class="c"><strong>60 / 75 / 80</strong></td><td class="c">40</td><td class="c">500</td><td class="c">1000</td><td class="c">160 / 240</td><td class="c">RU-42</td></tr>
+  <tr><td>ARL-52</td><td class="c">90 / 115 / 125</td><td class="c">60</td><td class="c">650</td><td class="c">1300</td><td class="c">200 / 300</td><td class="c">RU-52</td></tr>
+  <tr><td>CFS-WAL-30</td><td class="c">30 / 37 / 39</td><td class="c">20</td><td class="c">300</td><td class="c">600</td><td class="c">150 / 220</td><td class="c">WAL</td></tr>
+  <tr><td>HAL-TPA-5.0</td><td class="c">40 / 48 / 50</td><td class="c">35</td><td class="c">400</td><td class="c">800</td><td class="c">150 / 210</td><td class="c">TPA</td></tr>
+</table>
+<p class="small">Every anchor needs its <strong>matching</strong> clutch (same row). The <strong>min wall</strong> differs for axial vs transverse pull — a thin panel can forbid an angled lift even when the anchor is strong enough.</p>
+
+<h3>3.4 · Sling angle</h3>
+<p class="sec">
+  A non-vertical sling at angle <code>&beta;</code> from vertical multiplies the anchor force by <code>z = 1/cos&beta;</code>
+  ( <code>z</code> = 1.00 / 1.04 / 1.16 at &beta; = 0° / 15° / 30° ) and adds a transverse pull of <code>F·tan&beta;</code> checked against
+  <code>V_zul</code>. Keep <code>&beta; ≤ 30°</code>. A <strong>spreader beam</strong> makes the slings vertical (&beta; = 0, no transverse pull) and is
+  <em>required</em> whenever a straight sling would exceed the angle limit, or the panel is thinner than the anchor's transverse min-wall.
+</p>
+
+<h3>3.5 · The placement procedure (deterministic, ordered)</h3>
+<div class="sec rule">
+  <div class="step"><b>1. Enumerate the handling states</b> for the element and its production method. Turn method is a hard input — if UNCONFIRMED, also run the free-crane-turn weak-axis check and hold.</div>
+  <div class="step"><b>2. Compute the per-anchor force</b> for every state (§3.1), each at its own strength column (§3.2). Keep the worst.</div>
+  <div class="step"><b>3. Fix n = 2.</b> Both anchors are safety-critical; n = 2 is the load basis, not a spare. More than two anchors still counts as two unless a load-balancing beam is used.</div>
+  <div class="step"><b>4. Compute the centre of gravity</b> including openings (and a note for the one-sided curtain). Require the panel to hang plumb: the lift line passes through the CoG, CoG below the picks.</div>
+  <div class="step"><b>5. Trial position a = 0.207·L</b> from each end (the balance point that minimises panel bending). Trial only.</div>
+  <div class="step"><b>6. Shift the anchors to keep it plumb</b> about the real CoG. For an asymmetric / opening-weakened panel, symmetric-about-mid-length is not enough.</div>
+  <div class="step"><b>7. Enforce edge distance, axis spacing and min wall thickness</b> from the catalogue (§3.3). The catalogue wins over the 0.207·L position.</div>
+  <div class="step"><b>8. Enforce clash clearance</b> — anchor + its supplementary reinforcement must clear the curtain, opening trimmers and other cast-ins, and not land on an opening void.</div>
+  <div class="step"><b>9. Check capacity</b> <code>F ≤ N_zul</code> per anchor, at the matched strength column, axial <em>and</em> transverse.</div>
+  <div class="step"><b>10. Decide rig:</b> spreader vs direct slings from the angle and the transverse min-wall (§3.4).</div>
+  <div class="step"><b>11. Decide outcome:</b> <span class="ok">ACCEPT (provisional)</span> if all pass · <span class="amber" style="font-weight:700">ITERATE</span> (move in, raise strength, upsize, add spreader) · <span class="fail">HOLD</span> if no solution or any input is missing/contested.</div>
+  <div class="step"><b>12. Never auto-release.</b> Output is always provisional and is flagged for a named human to countersign.</div>
+</div>
+
+<h3>3.6 · Hard stops (your agent must enforce these, fail-closed)</h3>
+<ul class="sec">
+  <li>No finalised placement against unresolved geometry (the §2 conflict) or an UNCONFIRMED turn method — emit a provisional result + an RFI.</li>
+  <li>No capacity read at the wrong strength column; no lift below the specified first-lift strength.</li>
+  <li>No anchor whose min wall thickness exceeds the panel thickness for the load direction in play.</li>
+  <li>No assuming &gt; 2 anchors share the load without a balancing beam.</li>
+  <li>No mismatched anchor/clutch; no tabulated capacity claimed without the supplementary reinforcement.</li>
+  <li>The agent itself never signs off — it always routes to a human.</li>
+</ul>
+
+<figure class="fig-narrow"><svg viewBox="0 0 360 322" xmlns="http://www.w3.org/2000/svg" font-family="Arial"><rect x="0" y="0" width="360" height="322" fill="white"/><rect x="110" y="40" width="140" height="210" fill="#f5f7fa" stroke="#1f2933" stroke-width="1.6"/><line x1="132" y1="48" x2="132" y2="242" stroke="#52606d" stroke-width="1.4"/><line x1="228" y1="48" x2="228" y2="242" stroke="#52606d" stroke-width="1.4"/><circle cx="180.0" cy="40" r="6" fill="#c0392b"/><line x1="180.0" y1="40" x2="180.0" y2="160" stroke="#c0392b" stroke-width="3"/><path d="M 171.0 160 q9 13 18 0" fill="none" stroke="#c0392b" stroke-width="3"/><path d="M 164.0 58 L 164.0 135 q0 14 16 14" fill="none" stroke="#2f855a" stroke-width="1.6"/><path d="M 196.0 58 L 196.0 135 q0 14 -16 14" fill="none" stroke="#2f855a" stroke-width="1.6"/><text x="180.0" y="270" font-size="10.5" fill="#2f855a" text-anchor="middle">supplementary reinforcement (Zulage)</text><text x="180.0" y="285" font-size="9.5" fill="#52606d" text-anchor="middle">capacity invalid without it</text><line x1="110" y1="30" x2="250" y2="30" stroke="#9aa5b1" stroke-width="1"/><line x1="110" y1="26" x2="110" y2="34" stroke="#9aa5b1" stroke-width="1"/><line x1="250" y1="26" x2="250" y2="34" stroke="#9aa5b1" stroke-width="1"/><text x="180.0" y="25" font-size="11" fill="#52606d" text-anchor="middle">t = 180</text><text x="102" y="100" font-size="9.5" fill="#52606d" text-anchor="end">cover 30 →</text><text x="258" y="190" font-size="10" fill="#c0392b">cast-in</text><text x="258" y="204" font-size="10" fill="#c0392b">anchor</text><text x="180.0" y="312" font-size="9.5" fill="#b7791f" text-anchor="middle">Figure 2 — cast-in anchor in the 180 mm section.</text></svg></figure>
+<p class="small" style="text-align:center; margin-top:-4px;">The 180 mm panel is thinner than the ARL-42 transverse min-wall (240 mm) → the pull must stay axial, which forces a spreader beam.</p>
+
+<!-- ============================================================ -->
+<h2>4 · Your task</h2>
+<div class="sec">
+<p>
+  Build a proof-of-concept <strong>AI agent</strong> that takes the WC001 element data (Appendix A), applies the rules of §3, and produces a
+  placed, checked, explainable lifting-anchor design. Concretely, given the element it must:
+</p>
+<ol>
+  <li><strong>Generate &amp; place the anchors</strong> — choose the anchor type and count, and output an (x, y) position for each on the panel.</li>
+  <li><strong>Show the check</strong> — for each handling state, the per-anchor force, the capacity at the matched strength, the utilisation, pass/fail.</li>
+  <li><strong>Explain itself</strong> — a short, auditable justification that cites which rule drove each decision, plus any RFIs (e.g. the geometry conflict, the unconfirmed turn method).</li>
+  <li><strong>Fail closed</strong> — when an input is missing or contradictory, return a <code>HOLD</code> with the reason and the conservative interim assumption, never a confident wrong answer.</li>
+  <li><strong>Visualise it (light)</strong> — a simple 2D elevation of WC001 with the anchors drawn where the agent put them. A static SVG/PNG/HTML is fine.</li>
+</ol>
+</div>
+
+<!-- ============================================================ -->
+<h2>5 · Functional requirements</h2>
+<table class="sec">
+  <tr><th style="width:42px">#</th><th>Requirement</th><th style="width:48px" class="c">Priority</th></tr>
+  <tr><td>F1</td><td>Read the element from a JSON input (Appendix A schema) and normalise it.</td><td class="c"><span class="tag must">MUST</span></td></tr>
+  <tr><td>F2</td><td>Deterministic engineering core: forces per state, CoG with openings, capacity checks, pass/fail — unit-tested.</td><td class="c"><span class="tag must">MUST</span></td></tr>
+  <tr><td>F3</td><td>An agent loop that orchestrates the core: chooses anchor, places it, runs checks, iterates, decides the outcome.</td><td class="c"><span class="tag must">MUST</span></td></tr>
+  <tr><td>F4</td><td>Structured output (suggested schema in §6) + a human-readable explanation with rule citations.</td><td class="c"><span class="tag must">MUST</span></td></tr>
+  <tr><td>F5</td><td>Fail-closed behaviour on the geometry conflict and the UNCONFIRMED turn method, surfaced as RFIs.</td><td class="c"><span class="tag must">MUST</span></td></tr>
+  <tr><td>F6</td><td>A 2D visualisation placing the anchors on the WC001 elevation.</td><td class="c"><span class="tag should">SHOULD</span></td></tr>
+  <tr><td>F7</td><td>Decide spreader vs direct slings and state why.</td><td class="c"><span class="tag should">SHOULD</span></td></tr>
+  <tr><td>F8</td><td>Generalise beyond WC001 (any wall in the input schema), and/or batch multiple elements.</td><td class="c"><span class="tag nice">NICE</span></td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>6 · The part we care most about — where the AI belongs</h2>
+<div class="callout red sec">
+  <span class="lbl">The determinism boundary — this is the core of the assessment</span>
+  Safety-critical arithmetic and pass/fail decisions <strong>must be deterministic, testable code</strong>. The LLM must <strong>not</strong>
+  compute a force, read a capacity, or decide a pass/fail by reasoning in prose. If a model hallucination can change a safety number, the
+  design has failed. We will look specifically for this line being drawn cleanly.
+</div>
+<div class="sec grid2">
+  <div>
+    <h4>Good jobs for the LLM agent</h4>
+    <ul>
+      <li>Ingesting and normalising messy / conflicting input.</li>
+      <li>Deciding <em>which</em> rule branch or case applies.</li>
+      <li>Orchestrating the tool calls and the iterate loop.</li>
+      <li>Writing the human-readable justification &amp; RFIs.</li>
+      <li>Choosing accept / iterate / escalate within the rules.</li>
+    </ul>
+  </div>
+  <div>
+    <h4>Must stay deterministic (tools/code)</h4>
+    <ul>
+      <li>Self-weight, per-anchor force, adhesion, angle factor.</li>
+      <li>Centre of gravity from geometry + openings.</li>
+      <li>Capacity lookup at the matched strength column.</li>
+      <li>Edge / spacing / thickness / clash checks.</li>
+      <li>The final <code>F ≤ N_zul</code> pass/fail and utilisation.</li>
+    </ul>
+  </div>
+</div>
+<p class="small">
+  A natural shape is an LLM agent with a set of typed tools (<code>compute_cog</code>, <code>per_anchor_force</code>, <code>lookup_capacity</code>,
+  <code>check_placement</code>) where the agent reasons about <em>what to do</em> and the tools do the maths. Any framework (or none) is fine —
+  we care about the boundary, not the library.
+</p>
+
+<!-- ============================================================ -->
+<h2>7 · Suggested output schema</h2>
+<pre><span class="k">{</span>
+  <span class="s">"element_id"</span>: "WC001",
+  <span class="s">"status"</span>: "ACCEPT_PROVISIONAL" | "HOLD" | "REJECT",
+  <span class="s">"cog_mm"</span>: { "x": 2280, "y": 1480, "source": "approval", "note": "..." },
+  <span class="s">"rig"</span>: { "spreader": true, "reason": "panel 180mm &lt; ARL-42 transverse min 240mm" },
+  <span class="s">"anchors"</span>: [
+    { "id": "A1", "type": "ARL-42", "clutch": "RU-42", "x_mm": 973, "y_mm": 0 },
+    { "id": "A2", "type": "ARL-42", "clutch": "RU-42", "x_mm": 3727, "y_mm": 0 }
+  ],
+  <span class="s">"checks"</span>: [
+    { "state": "demould",  "strength_mpa": 15, "F_kN": 56.4, "N_zul_kN": 60, "util": 0.94, "pass": true },
+    { "state": "transport","strength_mpa": 35, "F_kN": 72.6, "N_zul_kN": 80, "util": 0.91, "pass": true }
+  ],
+  <span class="s">"rfis"</span>: [
+    "Geometry conflict: approval 4700/2 openings vs IFC 4300/0 — CoG unresolved.",
+    "Turn method UNCONFIRMED — weak-axis check run conservatively."
+  ],
+  <span class="s">"rule_trace"</span>: [ { "step": 6, "decision": "...", "rule": "§3.5.6 plumb" } ],
+  <span class="s">"requires_human_signoff"</span>: true
+<span class="k">}</span></pre>
+
+<!-- ============================================================ -->
+<h2>8 · Deliverables</h2>
+<ol class="sec">
+  <li><strong>A git repo</strong> that runs from a README with one command, producing the WC001 output above.</li>
+  <li><strong>The WC001 result</strong> — the structured output + the 2D visualisation.</li>
+  <li><strong>Tests</strong> for the deterministic core (include edge cases: an off-centre CoG, a too-thin panel, a missing input).</li>
+  <li><strong>A design note (≤ 2 pages)</strong>: your architecture, where the determinism boundary sits, where and how you used AI (including any AI you used to <em>build</em> it), your assumptions, what is POC-grade, and what you would do next for production.</li>
+</ol>
+
+<!-- ============================================================ -->
+<h2>9 · How we evaluate</h2>
+<table class="sec">
+  <tr><th>Dimension</th><th class="c" style="width:44px">Weight</th><th>What a strong submission shows</th></tr>
+  <tr><td>Engineering correctness &amp; safety</td><td class="c">30%</td><td>Right force per case at the right strength; n = 2; CoG includes openings; <strong>catches the geometry conflict and holds</strong> instead of guessing.</td></tr>
+  <tr><td>AI-agent architecture</td><td class="c">25%</td><td>Clean determinism boundary; sensible tools; LLM used for orchestration/explanation, never for safety maths; robust to bad input.</td></tr>
+  <tr><td>Output &amp; explainability</td><td class="c">20%</td><td>A human can audit every decision: positions, per-anchor utilisation, rule citations, RFIs.</td></tr>
+  <tr><td>Code quality &amp; tests</td><td class="c">15%</td><td>Readable, runnable, the safety core is tested including edge cases.</td></tr>
+  <tr><td>Product sense &amp; communication</td><td class="c">10%</td><td>Honest design note; clear about limits; good next-step thinking.</td></tr>
+</table>
+<p class="small">We would rather see a small, correct, well-bounded agent that <em>holds</em> on WC001's ambiguity than a slick one that confidently emits a wrong number.</p>
+
+<!-- ============================================================ -->
+<h2>10 · Stretch goals (only if time)</h2>
+<ul class="sec">
+  <li>4-point lift with a load-balancing traverse (so <code>n</code> can rise above 2).</li>
+  <li>Read geometry from a minimal IFC or the provided mesh instead of JSON.</li>
+  <li>Surface a confidence / uncertainty signal alongside each decision.</li>
+  <li>A small chat affordance — ask the agent "why is anchor 1 here?" and get the rule-grounded answer.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2>11 · Ground rules &amp; FAQ</h2>
+<div class="sec">
+  <p><strong>Background.</strong> We are hiring a software / AI engineer. You don't need structural knowledge — the rules and numbers are all here. Where something is ambiguous, state your assumption and move on.</p>
+  <p><strong>AI tools.</strong> Use Claude, Copilot, whatever you like, to build this — just tell us how in the design note. Using AI well is part of the job.</p>
+  <p><strong>Scope.</strong> One element, one focused day. Don't gold-plate. A correct, bounded POC beats an unfinished platform.</p>
+  <p><strong>The data conflict in §2 is deliberate.</strong> How your agent handles it is a signal, not a trap to trick you — we want to see fail-closed behaviour.</p>
+  <p><strong>Questions / submission.</strong> Reply to this thread with your repo link, or ask anything before you start — clarifying questions are welcome and noted positively.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>Appendix A · WC001 element data (your input)</h2>
+<pre>{
+  &quot;element_id&quot;: &quot;WC001&quot;,
+  &quot;type&quot;: &quot;precast_rc_wall_panel&quot;,
+  &quot;description&quot;: &quot;Internal load-bearing stability wall (HybriDfMA family).&quot;,
+  &quot;note_on_sources&quot;: &quot;Geometry reaches you from two systems that DO NOT agree. Decide how your agent should behave.&quot;,
+  &quot;sources&quot;: {
+    &quot;approval_design&quot;: {
+      &quot;length_mm&quot;: 4700,
+      &quot;height_mm&quot;: 3000,
+      &quot;thickness_mm&quot;: 180,
+      &quot;openings_mm&quot;: [
+        { &quot;id&quot;: &quot;door&quot;,   &quot;x&quot;: 1150, &quot;width&quot;: 1100, &quot;sill&quot;: 0,   &quot;height&quot;: 2100 },
+        { &quot;id&quot;: &quot;window&quot;, &quot;x&quot;: 3050, &quot;width&quot;: 1200, &quot;sill&quot;: 950, &quot;height&quot;: 1000 }
+      ]
+    },
+    &quot;ifc_export&quot;: {
+      &quot;length_mm&quot;: 4300,
+      &quot;height_mm&quot;: 3000,
+      &quot;thickness_mm&quot;: 180,
+      &quot;openings_mm&quot;: []
+    }
+  },
+  &quot;concrete&quot;: {
+    &quot;class&quot;: &quot;C32/40&quot;,
+    &quot;density_kg_per_m3&quot;: 2400,
+    &quot;first_lift_strength_mpa&quot;: 15,
+    &quot;note&quot;: &quot;first_lift_strength is the SPECIFIED stripping strength; in production it must be CONFIRMED by a measured cube / maturity at the stripping instant.&quot;
+  },
+  &quot;reinforcement&quot;: {
+    &quot;main_curtain&quot;: &quot;H16@200&quot;,
+    &quot;horizontal&quot;: &quot;H8@200&quot;,
+    &quot;edge_u_bars&quot;: &quot;H8@200&quot;,
+    &quot;opening_trimmers&quot;: &quot;H12&quot;,
+    &quot;cover_mm&quot;: 30,
+    &quot;faces&quot;: 2,
+    &quot;note&quot;: &quot;Curtain steps down up the building; treat the section as having a mild one-sided mass bias.&quot;
+  },
+  &quot;production&quot;: {
+    &quot;cast_orientation&quot;: &quot;flat&quot;,
+    &quot;mould&quot;: &quot;tilting_table_or_battery&quot;,
+    &quot;turn_method&quot;: &quot;UNCONFIRMED&quot;,
+    &quot;storage&quot;: &quot;A-frame stillage, anchor-up&quot;
+  },
+  &quot;handling_states_required&quot;: [&quot;demould&quot;, &quot;turn&quot;, &quot;storage&quot;, &quot;transport&quot;, &quot;erection&quot;]
+}</pre>
+
+<h2>Appendix B · Glossary (for the non-structural reader)</h2>
+<table class="sec">
+  <tr><th style="width:130px">Term</th><th>Plain meaning</th></tr>
+  <tr><td>Lifting anchor</td><td>A steel insert cast into the concrete that a crane clutch hooks onto to lift the element.</td></tr>
+  <tr><td>Demould / strip</td><td>Lifting the element out of its mould — the earliest, weakest-concrete lift.</td></tr>
+  <tr><td>Centre of gravity (CoG)</td><td>The balance point of the element's mass; openings move it. The element hangs plumb only if the lift line passes through it.</td></tr>
+  <tr><td>Balance point (0.207·L)</td><td>The pickup position that minimises bending in the element when lifted as a beam.</td></tr>
+  <tr><td>Dynamic factor (&psi;)</td><td>A multiplier on self-weight for the jolts of a given operation (transport bounces hardest).</td></tr>
+  <tr><td>Spreader beam</td><td>A bar above the element that keeps the slings vertical, removing sideways pull on the anchors.</td></tr>
+  <tr><td>Supplementary reinforcement</td><td>Extra steel around the anchor; without it the anchor's rated capacity does not apply.</td></tr>
+  <tr><td>Utilisation</td><td>Demand ÷ capacity. ≤ 1.0 passes; the closer to 1.0, the less margin.</td></tr>
+  <tr><td>RFI</td><td>"Request for information" — the formal way an engineer flags missing/contradictory input instead of guessing.</td></tr>
+  <tr><td>Prüfingenieur</td><td>An independent checking engineer (German practice) who must be convinced the design is safe before it is built. Imagine your output has to satisfy one.</td></tr>
+</table>
+
+<div class="footer-note">BuildTwin · AI Factory — technical assessment v1.0 · POC on synthetic data, not for fabrication · figures indicative</div>
+
+</body>
+</html>

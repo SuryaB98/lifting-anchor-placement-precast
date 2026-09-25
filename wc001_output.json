@@ -1,0 +1,150 @@
+{
+  "element_id": "WC001",
+  "status": "HOLD",
+  "cog_mm": {
+    "x": 2344.5,
+    "y": 1603.8,
+    "z": 90.0,
+    "length_mm": 4700.0,
+    "height_mm": 3000.0,
+    "thickness_mm": 180.0,
+    "source": "approval_design",
+    "self_weight_G_kN": 44.86,
+    "mass_tonnes": 4.57
+  },
+  "openings": [
+    {
+      "id": "door",
+      "x": 1150.0,
+      "width": 1100.0,
+      "sill": 0.0,
+      "height": 2100.0
+    },
+    {
+      "id": "window",
+      "x": 3050.0,
+      "width": 1200.0,
+      "sill": 950.0,
+      "height": 1000.0
+    }
+  ],
+  "rig": {
+    "spreader": true,
+    "reason": "Panel thickness 180mm < ARL-42 transverse min wall 240mm (Figure 2 constraint: spreader mandatory)."
+  },
+  "anchors": [
+    {
+      "id": "A1",
+      "type": "ARL-42",
+      "clutch": "RU-42",
+      "x_mm": 967.4,
+      "y_mm": 0.0
+    },
+    {
+      "id": "A2",
+      "type": "ARL-42",
+      "clutch": "RU-42",
+      "x_mm": 3721.6,
+      "y_mm": 0.0
+    }
+  ],
+  "checks": [
+    {
+      "state": "demould",
+      "strength_mpa": 15.0,
+      "F_kN": 36.21,
+      "N_zul_kN": 60.0,
+      "util": 0.604,
+      "pass": true
+    },
+    {
+      "state": "turn",
+      "strength_mpa": 15.0,
+      "F_kN": 31.4,
+      "N_zul_kN": 60.0,
+      "util": 0.523,
+      "pass": true
+    },
+    {
+      "state": "storage",
+      "strength_mpa": 15.0,
+      "F_kN": 0.0,
+      "N_zul_kN": 60.0,
+      "util": 0.0,
+      "pass": true
+    },
+    {
+      "state": "transport",
+      "strength_mpa": 35.0,
+      "F_kN": 44.86,
+      "N_zul_kN": 80.0,
+      "util": 0.561,
+      "pass": true
+    },
+    {
+      "state": "erection",
+      "strength_mpa": 35.0,
+      "F_kN": 31.4,
+      "N_zul_kN": 80.0,
+      "util": 0.393,
+      "pass": true
+    }
+  ],
+  "rfis": [
+    "Turn method UNCONFIRMED \u2014 free-crane-turn weak-axis dynamic factor (psi=1.4) evaluated conservatively."
+  ],
+  "rule_trace": [
+    {
+      "step": 1,
+      "decision": "Ingested element WC001 (precast_rc_wall_panel). Enumerated handling states: demould, turn, storage, transport, erection.",
+      "rule": "\u00a73.5.1 Enumerate handling states"
+    },
+    {
+      "step": 4,
+      "decision": "Computed net CoG at X=2344.5mm, Y=1603.8mm accounting for 2 openings. Self-weight G=44.86 kN (4.57 t).",
+      "rule": "\u00a73.5.4 Compute CoG with openings"
+    },
+    {
+      "step": 5,
+      "decision": "Trial position calculated at a = 0.207 * L (972.9mm from ends).",
+      "rule": "\u00a73.5.5 Trial position 0.207L"
+    },
+    {
+      "step": 6,
+      "decision": "Shifted anchors to X1=967.4mm, X2=3721.6mm so midpoint (2344.5mm) aligns with net X_CoG (2344.5mm) for plumb lift.",
+      "rule": "\u00a73.5.6 Plumb alignment about CoG"
+    },
+    {
+      "step": 7,
+      "decision": "Checked edge distances (left=967.4mm >= 500.0mm) and axis spacing (2754.2mm >= 1000.0mm).",
+      "rule": "\u00a73.5.7 Edge distance & spacing check"
+    },
+    {
+      "step": 8,
+      "decision": "Checked clash clearance against panel boundaries, supplementary rebar, and opening voids.",
+      "rule": "\u00a73.5.8 Clash clearance"
+    },
+    {
+      "step": 9,
+      "decision": "Evaluated per-anchor force vs capacity N_zul at matched concrete strength columns. Governing state: 'demould' with max utilization 0.60.",
+      "rule": "\u00a73.5.9 Capacity check F <= N_zul"
+    },
+    {
+      "step": 10,
+      "decision": "Rig decision: Spreader beam=True. Reason: Panel thickness 180mm < ARL-42 transverse min wall 240mm (Figure 2 constraint: spreader mandatory).",
+      "rule": "\u00a73.5.10 Rig decision & \u00a73.4 Sling angle"
+    },
+    {
+      "step": 11,
+      "decision": "Decided outcome: HOLD. RFIs generated: 1. Refused auto-release; routed for human signoff.",
+      "rule": "\u00a73.5.11 Outcome decision & \u00a73.6 Hard stops"
+    },
+    {
+      "step": 12,
+      "decision": "[LIVE LLM SYNTHESIS (GPT-4o-mini)]: ### Assessment Summary for Element ID: WC001\n\n#### Element Details:\n- Type: Precast RC Wall Panel\n- Dimensions from Approval Design:\n  - Length: 4700 mm\n  - Height: 3000 mm\n  - Thickness: 180 mm\n\n#### Center of Gravity (CoG):\n- X: 2344.5 mm\n- Y: 1603.8 mm\n- Z: 90.0 mm\n- Self-Weight G: 44.86 kN (Mass: 4.57 tonnes)\n\n#### Anchor Placement:\n- **Selected Anchor Type**: ARL-42\n- Anchor Locations:\n  - A1: (967.4 mm, 0.0 mm)\n  - A2: (3721.6 mm, 0.0 mm)\n  \n#### Safety Checks:\nAll checks for the states of handling (demould, turn, storage, transport, erection) have been evaluated for pass/fail.\n\n| Handling State | Strength (MPa) | Force (kN) | Nzul (kN) | Utilization | Pass/Fail |\n|----------------|----------------|-------------|-----------|-------------|-----------|\n| Demould        | 15.0           | 36.21       | 60.0      | 0.604       | Pass      |\n| Turn           | 15.0           | 31.4        | 60.0      | 0.523       | Pass      |\n| Storage        | 15.0           | 0.0         | 60.0      | 0.0         | Pass      |\n| Transport      | 35.0           | 44.86       | 80.0      | 0.561       | Pass      |\n| Erection       | 35.0           | 31.4        | 80.0      | 0.393       | Pass      |\n\n#### Additional Notes:\n- A rig with a spreader is required due to the thickness constraint: 180 mm < 240 mm (min wall requirement).\n- There is an RFI regarding the turn method status being \"UNCONFIRMED\" \u2014 the dynamic factor assessed conservatively due to weak-axis dynamic considerations.\n\n**Conclusion**: All tests passed; however, validation of the turn method should be confirmed before proceeding. Therefore, lifting anchor placement can be recommended contingent upon the confirmation of the turn method.\n\n### Status: SAFE for Anchor Placement Based on Current Parameters.",
+      "rule": "\u00a76 Live AI Agent Reasoning & Audit Narrative"
+    }
+  ],
+  "requires_human_signoff": true,
+  "llm_live_justification": "### Assessment Summary for Element ID: WC001\n\n#### Element Details:\n- Type: Precast RC Wall Panel\n- Dimensions from Approval Design:\n  - Length: 4700 mm\n  - Height: 3000 mm\n  - Thickness: 180 mm\n\n#### Center of Gravity (CoG):\n- X: 2344.5 mm\n- Y: 1603.8 mm\n- Z: 90.0 mm\n- Self-Weight G: 44.86 kN (Mass: 4.57 tonnes)\n\n#### Anchor Placement:\n- **Selected Anchor Type**: ARL-42\n- Anchor Locations:\n  - A1: (967.4 mm, 0.0 mm)\n  - A2: (3721.6 mm, 0.0 mm)\n  \n#### Safety Checks:\nAll checks for the states of handling (demould, turn, storage, transport, erection) have been evaluated for pass/fail.\n\n| Handling State | Strength (MPa) | Force (kN) | Nzul (kN) | Utilization | Pass/Fail |\n|----------------|----------------|-------------|-----------|-------------|-----------|\n| Demould        | 15.0           | 36.21       | 60.0      | 0.604       | Pass      |\n| Turn           | 15.0           | 31.4        | 60.0      | 0.523       | Pass      |\n| Storage        | 15.0           | 0.0         | 60.0      | 0.0         | Pass      |\n| Transport      | 35.0           | 44.86       | 80.0      | 0.561       | Pass      |\n| Erection       | 35.0           | 31.4        | 80.0      | 0.393       | Pass      |\n\n#### Additional Notes:\n- A rig with a spreader is required due to the thickness constraint: 180 mm < 240 mm (min wall requirement).\n- There is an RFI regarding the turn method status being \"UNCONFIRMED\" \u2014 the dynamic factor assessed conservatively due to weak-axis dynamic considerations.\n\n**Conclusion**: All tests passed; however, validation of the turn method should be confirmed before proceeding. Therefore, lifting anchor placement can be recommended contingent upon the confirmation of the turn method.\n\n### Status: SAFE for Anchor Placement Based on Current Parameters."
+}

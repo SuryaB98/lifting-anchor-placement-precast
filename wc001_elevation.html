@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BuildTwin — Precast Lifting Anchor Verification — Element WC001</title>
+    <style>
+        :root {
+            --primary: #1b4965;
+            --accent: #2c6fbb;
+            --bg-soft: #f8fafc;
+            --border: #cbd2d9;
+            --red: #c0392b;
+            --green: #2f6b3f;
+            --amber: #9c6a13;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            margin: 0; padding: 24px;
+            background: #f1f5f9; color: #1e293b;
+        }
+        .container {
+            max-width: 1050px; margin: 0 auto; background: white;
+            padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+        .header {
+            border-bottom: 3px solid var(--primary); padding-bottom: 16px; margin-bottom: 24px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        h1 { margin: 0; font-size: 24px; color: var(--primary); }
+        .subtitle { font-size: 14px; color: #64748b; margin-top: 4px; }
+        .status-badge {
+            padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 13px; text-transform: uppercase;
+        }
+        .status-badge.hold { background: #fef2f2; color: var(--red); border: 1px solid #fca5a5; }
+        .status-badge.ok { background: #f0fdf4; color: var(--green); border: 1px solid #86efac; }
+
+        .card { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 6px; padding: 18px; margin-bottom: 24px; }
+        .card h3 { margin-top: 0; color: var(--primary); font-size: 16px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
+        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: #e2e8f0; color: #334155; font-weight: 600; }
+        .badge { padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; }
+        .badge.pass { background: #dcfce7; color: #166534; }
+        .badge.fail { background: #fee2e2; color: #991b1b; }
+
+        .rfi-list { list-style: none; padding: 0; margin: 0; }
+        .rfi-list li { background: #fffbebf5; border: 1px solid #fde68a; color: var(--amber); padding: 10px 14px; border-radius: 4px; margin-bottom: 8px; font-size: 13px; }
+
+        .trace-item { border-left: 3px solid var(--accent); padding-left: 12px; margin-bottom: 12px; }
+        .trace-item p { margin: 4px 0 0 0; font-size: 13px; }
+        .rule-tag { font-size: 11px; background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 3px; font-weight: 600; }
+        .svg-box { text-anchor: center; background: white; border: 1px solid var(--border); border-radius: 6px; padding: 10px; text-align: center; margin-bottom: 24px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>Precast Lifting-Anchor Verification — WC001</h1>
+                <div class="subtitle">BuildTwin AI Cockpit · Deterministic Safety Verification & Audit Report</div>
+            </div>
+            <div class="status-badge hold">
+                HOLD
+            </div>
+        </div>
+
+        <!-- 2D SVG Visualizer -->
+        <div class="svg-box">
+            <svg viewBox="0 0 920 630" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif">
+    <!-- Background -->
+    <rect x="0" y="0" width="920" height="630" fill="#ffffff"/>
+    <style>
+        .title { font-size: 16px; font-weight: bold; fill: #1b4965; }
+        .dim-text { font-size: 11px; fill: #52606d; text-anchor: middle; }
+        .anchor-lbl { font-size: 11px; fill: #c0392b; font-weight: bold; text-anchor: middle; }
+        .badge-hold { fill: #c0392b; font-weight: bold; }
+        .badge-ok { fill: #2f6b3f; font-weight: bold; }
+    </style>
+
+    <!-- Crane Hook & Cable -->
+    <line x1="379.39148936170216" y1="40.0" x2="379.39148936170216" y2="70" stroke="#1f2933" stroke-width="2"/>
+    <path d="M 373.39148936170216 70 a6 8 0 1 0 12 0" fill="none" stroke="#1f2933" stroke-width="2"/>
+    <text x="391.39148936170216" y="52" font-size="11" fill="#52606d">crane hook</text>
+
+    <!-- Spreader Beam -->
+    <rect x="213.0314893617021" y="113.0" width="332.72" height="14" rx="3" fill="#2c6fbb"/>
+    <line x1="379.39148936170216" y1="70" x2="379.39148936170216" y2="113.0" stroke="#1f2933" stroke-width="2"/>
+    <text x="379.39148936170216" y="121.0" font-size="10" fill="#ffffff" text-anchor="middle" dominant-baseline="middle">spreader beam — slings vertical (&beta; = 0&deg;)</text>
+
+    <!-- Vertical Slings from Spreader Beam to Anchors -->
+    <line x1="227.0314893617021" y1="127.0" x2="227.0314893617021" y2="215.0" stroke="#2c6fbb" stroke-width="2" stroke-dasharray="4 2"/>
+    <line x1="531.7514893617022" y1="127.0" x2="531.7514893617022" y2="215.0" stroke="#2c6fbb" stroke-width="2" stroke-dasharray="4 2"/>
+
+    <!-- Panel Outline -->
+    <rect x="120.0" y="215.0" width="520.0" height="331.9148936170213" fill="#f5f7fa" stroke="#1f2933" stroke-width="2"/>
+
+    <!-- Openings -->
+    
+    <rect x="247.2340425531915" y="314.57446808510645" width="121.70212765957446" height="232.3404255319149" fill="#e4e7eb" stroke="#52606d" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="308.0851063829787" y="430.7446808510639" font-size="10" fill="#52606d" text-anchor="middle">door (1100x2100)</text>
+    <rect x="457.4468085106383" y="331.17021276595756" width="132.7659574468085" height="110.63829787234042" fill="#e4e7eb" stroke="#52606d" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="523.8297872340426" y="386.4893617021278" font-size="10" fill="#52606d" text-anchor="middle">window (1200x1000)</text>
+
+    <!-- Anchors -->
+    <!-- Anchor 1 -->
+    <circle cx="227.0314893617021" cy="215.0" r="6" fill="#c0392b"/>
+    <line x1="227.0314893617021" y1="215.0" x2="227.0314893617021" y2="245.0" stroke="#c0392b" stroke-width="2"/>
+    <text x="227.0314893617021" y="203.0" class="anchor-lbl">A1 (ARL-42)</text>
+
+    <!-- Anchor 2 -->
+    <circle cx="531.7514893617022" cy="215.0" r="6" fill="#c0392b"/>
+    <line x1="531.7514893617022" y1="215.0" x2="531.7514893617022" y2="245.0" stroke="#c0392b" stroke-width="2"/>
+    <text x="531.7514893617022" y="203.0" class="anchor-lbl">A2 (ARL-42)</text>
+
+    <!-- CoG Symbol & Plumb Line -->
+    <line x1="379.3914893617021" y1="215.0" x2="379.3914893617021" y2="576.9148936170213" stroke="#1f2933" stroke-width="1" stroke-dasharray="3 3"/>
+    <circle cx="379.3914893617021" cy="369.47319148936174" r="9" fill="#ffffff" stroke="#1f2933" stroke-width="1.5"/>
+    <path d="M 370.3914893617021 369.47319148936174 A 9 9 0 0 1 379.3914893617021 360.47319148936174 L 379.3914893617021 369.47319148936174 Z" fill="#1f2933"/>
+    <path d="M 388.3914893617021 369.47319148936174 A 9 9 0 0 1 379.3914893617021 378.47319148936174 L 379.3914893617021 369.47319148936174 Z" fill="#1f2933"/>
+    <text x="393.3914893617021" y="373.47319148936174" font-size="11" fill="#1f2933" font-weight="bold">Net CoG (2344, 1604)</text>
+
+    <!-- Dimensions -->
+    <!-- Edge Distance A1 -->
+    <line x1="120.0" y1="190.0" x2="227.0314893617021" y2="190.0" stroke="#9aa5b1" stroke-width="1"/>
+    <text x="173.51574468085107" y="185.0" class="dim-text">a1 = 967 mm</text>
+
+    <!-- Spacing s -->
+    <line x1="227.0314893617021" y1="190.0" x2="531.7514893617022" y2="190.0" stroke="#c0392b" stroke-width="1.2"/>
+    <text x="379.39148936170216" y="185.0" font-size="11" fill="#c0392b" text-anchor="middle" font-weight="bold">s = 2754 mm (Plumb Spacing)</text>
+
+    <!-- Edge Distance A2 -->
+    <line x1="531.7514893617022" y1="190.0" x2="640.0" y2="190.0" stroke="#9aa5b1" stroke-width="1"/>
+    <text x="585.8757446808511" y="185.0" class="dim-text">a2 = 978 mm</text>
+
+    <!-- Panel Overall Length & Height -->
+    <line x1="120.0" y1="571.9148936170213" x2="640.0" y2="571.9148936170213" stroke="#1f2933" stroke-width="1"/>
+    <text x="380.0" y="586.9148936170213" font-size="12" fill="#1f2933" text-anchor="middle" font-weight="bold">L = 4700 mm | H = 3000 mm | t = 180 mm (Solid Precast Panel)</text>
+
+    <!-- Status & Data Card -->
+    <rect x="660" y="215" width="240" height="330" rx="6" fill="#f8fafc" stroke="#cbd2d9" stroke-width="1"/>
+    <text x="675" y="240" font-size="13" fill="#1b4965" font-weight="bold">Element Data: WC001</text>
+    <text x="675" y="265" font-size="11" fill="#52606d">Status:</text>
+    <text x="880" y="265" font-size="11" class="badge-hold" text-anchor="end">HOLD</text>
+    
+    <line x1="675" y1="275" x2="885" y2="275" stroke="#e4e7eb"/>
+    <text x="675" y="295" font-size="10.5" fill="#52606d">Self-Weight G:</text>
+    <text x="885" y="295" font-size="10.5" fill="#1f2933" text-anchor="end">44.9 kN (4.57 t)</text>
+
+    <text x="675" y="320" font-size="10.5" fill="#52606d">Anchor Type:</text>
+    <text x="885" y="320" font-size="10.5" fill="#1f2933" text-anchor="end">ARL-42 (RU-42)</text>
+
+    <text x="675" y="345" font-size="10.5" fill="#52606d">Rig Requirement:</text>
+    <text x="885" y="345" font-size="10.5" class="badge-hold" text-anchor="end" font-weight="bold">Spreader Mandatory</text>
+
+    <text x="675" y="370" font-size="10.5" fill="#52606d">Reason:</text>
+    <text x="675" y="388" font-size="9.5" fill="#52606d" width="200">Panel thickness 180mm < ARL-42 transvers</text>
+
+    <line x1="675" y1="405" x2="885" y2="405" stroke="#e4e7eb"/>
+    <text x="675" y="425" font-size="11" fill="#1b4965" font-weight="bold">Active RFIs (1):</text>
+    <text x="675" y="445" font-size="9" fill="#c0392b">1. Turn method UNCONFIRMED — free-cran...</text>
+
+    <text x="675" y="520" font-size="9.5" fill="#7b8794">BuildTwin AI Cockpit v1.0</text>
+</svg>
+        </div>
+
+        <!-- Active RFIs Callout -->
+        <div class="card" style="border-left: 4px solid var(--amber);">
+            <h3>Request For Information (RFIs) & Fail-Closed Alerts</h3>
+            <ul class="rfi-list">
+                <li>⚠️ Turn method UNCONFIRMED — free-crane-turn weak-axis dynamic factor (psi=1.4) evaluated conservatively.</li>
+            </ul>
+        </div>
+
+        <div class="grid2">
+            <!-- Handling State Capacity Verification Table -->
+            <div class="card">
+                <h3>Handling State Load Checks (§3.2)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Handling State</th>
+                            <th>Concrete</th>
+                            <th>Demand F</th>
+                            <th>Capacity N_zul</th>
+                            <th>Utilisation</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                <td><strong>demould</strong></td>
+                <td>@15.0 MPa</td>
+                <td>36.21 kN</td>
+                <td>60.0 kN</td>
+                <td><strong>0.60</strong></td>
+                <td><span class="badge pass">PASS</span></td>
+            </tr><tr>
+                <td><strong>turn</strong></td>
+                <td>@15.0 MPa</td>
+                <td>31.4 kN</td>
+                <td>60.0 kN</td>
+                <td><strong>0.52</strong></td>
+                <td><span class="badge pass">PASS</span></td>
+            </tr><tr>
+                <td><strong>storage</strong></td>
+                <td>@15.0 MPa</td>
+                <td>0.0 kN</td>
+                <td>60.0 kN</td>
+                <td><strong>0.00</strong></td>
+                <td><span class="badge pass">PASS</span></td>
+            </tr><tr>
+                <td><strong>transport</strong></td>
+                <td>@35.0 MPa</td>
+                <td>44.86 kN</td>
+                <td>80.0 kN</td>
+                <td><strong>0.56</strong></td>
+                <td><span class="badge pass">PASS</span></td>
+            </tr><tr>
+                <td><strong>erection</strong></td>
+                <td>@35.0 MPa</td>
+                <td>31.4 kN</td>
+                <td>80.0 kN</td>
+                <td><strong>0.39</strong></td>
+                <td><span class="badge pass">PASS</span></td>
+            </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Rig & Anchor Summary -->
+            <div class="card">
+                <h3>Rig & Placement Decisions (§3.4, §3.5)</h3>
+                <p><strong>Candidate Anchor:</strong> ARL-42 (Admissible load 80 kN @ 35 MPa)</p>
+                <p><strong>Matching Clutch:</strong> RU-42</p>
+                <p><strong>Rig Requirement:</strong> <span style="color: var(--red); font-weight: bold;">Spreader Beam Mandatory</span></p>
+                <p><strong>Reason:</strong> Panel thickness 180mm < ARL-42 transverse min wall 240mm (Figure 2 constraint: spreader mandatory).</p>
+                <p><strong>Sign-off Requirement:</strong> Human Engineer Countersign Required (Rule 3.6)</p>
+            </div>
+        </div>
+
+        <!-- Deterministic Rule Trace -->
+        <div class="card">
+            <h3>Auditable Rule Trace (§3.5 Procedure)</h3>
+            <div class="trace-item">
+                    <span class="rule-tag">§3.5.1 Enumerate handling states</span>
+                    <p><strong>Step 1:</strong> Ingested element WC001 (precast_rc_wall_panel). Enumerated handling states: demould, turn, storage, transport, erection.</p>
+                </div><div class="trace-item">
+                    <span class="rule-tag">§3.5.4 Compute CoG with openings</span>
+                    <p><strong>Step 4:</strong> Computed net CoG at X=2344.5mm, Y=1603.8mm accounting for 2 openings. Self-weight G=44.86 kN (4.57 t).</p>
+                </div><div class="trace-item">
+                    <span class="rule-tag">§3.5.5 Trial position 0.207L</span>
+                    <p><strong>Step 5:</strong> Trial position calculated at a = 0.207 * L (972.9mm from ends).</p>
+                </div><div class="trace-item">
+                    <span class="rule-tag">§3.5.6 Plumb alignment about CoG</span>
+                    <p><strong>Step 6:</strong> Shifted anchors to X1=967.4mm, X2=3721.6mm so midpoint (2344.5mm) aligns with net X_CoG (2344.5mm) for plumb lift.</p>
+                </div><div class="trace-item">
+                    <span class="rule-tag">§3.5.7 Edge distance & spacing check</span>
+                    <p><strong>Step 7:</strong> Checked edge distances (left=967.4mm &gt;= 500.0mm) and axis spacing (2754.2mm &gt;= 1000.0mm).</p>
+                </div><div class="trace-item">
+                    <span class="rule-tag">§3.5.8 Clash clearance</span>
+                    <p><strong>Step 8:</strong> Checked clash clearance against panel boundaries, supplementary rebar, and opening voids.</p>
+                </div><div class="trace-item">
+                    <span class="rule-tag">§3.5.9 Capacity check F <= N_zul</span>
+                    <p><strong>Step 9:</strong> Evaluated per-anchor force vs capacity N_zul at matched concrete strength columns. Governing state: &#x27;demould&#x27; with max utilization 0.60.</p>
+                </div><div class="trace-item">
+                    <span class="rule-tag">§3.5.10 Rig decision & §3.4 Sling angle</span>
+                    <p><strong>Step 10:</strong> Rig decision: Spreader beam=True. Reason: Panel thickness 180mm &lt; ARL-42 transverse min wall 240mm (Figure 2 constraint: spreader mandatory).</p>
+                </div><div class="trace-item">
+                    <span class="rule-tag">§3.5.11 Outcome decision & §3.6 Hard stops</span>
+                    <p><strong>Step 11:</strong> Decided outcome: HOLD. RFIs generated: 1. Refused auto-release; routed for human signoff.</p>
+                </div><div class="trace-item" style="border-left: 4px solid #0284c7; background: #f0f9ff; padding: 12px; margin-bottom: 12px; border-radius: 4px;">
+                    <span class="rule-tag" style="background: #0284c7; color: white;">§6 Live AI Agent Reasoning & Audit Narrative</span>
+                    <p style="margin-top: 6px; margin-bottom: 6px;"><strong>Step 12:</strong> [Live LLM Audit Reasoning]</p>
+                    <div style="font-size: 13px; line-height: 1.6; color: #1e293b;">[LIVE LLM SYNTHESIS (GPT-4o-mini)]: <h4 style="margin: 10px 0 4px 0; color: #1b4965;">Assessment Summary for Element ID: WC001</h4><br><h4 style="margin: 10px 0 4px 0; color: #1b4965;"># Element Details:</h4>- Type: Precast RC Wall Panel<br>- Dimensions from Approval Design:<br>  - Length: 4700 mm<br>  - Height: 3000 mm<br>  - Thickness: 180 mm<br><br><h4 style="margin: 10px 0 4px 0; color: #1b4965;"># Center of Gravity (CoG):</h4>- X: 2344.5 mm<br>- Y: 1603.8 mm<br>- Z: 90.0 mm<br>- Self-Weight G: 44.86 kN (Mass: 4.57 tonnes)<br><br><h4 style="margin: 10px 0 4px 0; color: #1b4965;"># Anchor Placement:</h4>- <strong>Selected Anchor Type</strong>: ARL-42<br>- Anchor Locations:<br>  - A1: (967.4 mm, 0.0 mm)<br>  - A2: (3721.6 mm, 0.0 mm)<br>  <br><h4 style="margin: 10px 0 4px 0; color: #1b4965;"># Safety Checks:</h4>All checks for the states of handling (demould, turn, storage, transport, erection) have been evaluated for pass/fail.<br><br>| Handling State | Strength (MPa) | Force (kN) | Nzul (kN) | Utilization | Pass/Fail |<br>|----------------|----------------|-------------|-----------|-------------|-----------|<br>| Demould        | 15.0           | 36.21       | 60.0      | 0.604       | Pass      |<br>| Turn           | 15.0           | 31.4        | 60.0      | 0.523       | Pass      |<br>| Storage        | 15.0           | 0.0         | 60.0      | 0.0         | Pass      |<br>| Transport      | 35.0           | 44.86       | 80.0      | 0.561       | Pass      |<br>| Erection       | 35.0           | 31.4        | 80.0      | 0.393       | Pass      |<br><br><h4 style="margin: 10px 0 4px 0; color: #1b4965;"># Additional Notes:</h4>- A rig with a spreader is required due to the thickness constraint: 180 mm &lt; 240 mm (min wall requirement).<br>- There is an RFI regarding the turn method status being &quot;UNCONFIRMED&quot; — the dynamic factor assessed conservatively due to weak-axis dynamic considerations.<br><br><strong>Conclusion</strong>: All tests passed; however, validation of the turn method should be confirmed before proceeding. Therefore, lifting anchor placement can be recommended contingent upon the confirmation of the turn method.<br><br><h4 style="margin: 10px 0 4px 0; color: #1b4965;">Status: SAFE for Anchor Placement Based on Current Parameters.</h4></div>
+                </div>
+        </div>
+    </div>
+</body>
+</html>
